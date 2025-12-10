@@ -124,3 +124,11 @@ Trigger: Push events
 After successful deployment:
 
 http://<EC2-PUBLIC-IP>:8080
+
+## ✅ Outcomes
+
+- Successfully deployed **Spring Boot E-Commerce application** on AWS EC2  
+- **MySQL RDS** database configured and securely connected  
+- Complete infrastructure automated using **Terraform**  
+- CI/CD pipeline implemented with **Jenkins**  
+- Gained hands-on experience in **cloud deployment, automation, and troubleshooting**

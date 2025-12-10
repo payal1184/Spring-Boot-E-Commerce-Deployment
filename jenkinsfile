@@ -1,0 +1,88 @@
+pipeline {
+    agent any
+
+    environment {
+        GITHUB_REPO_URL = "https://github.com/Sharayu1707/E-Commerce-Spring-Boot-Application.git"
+        GIT_BRANCH = "main"
+        SSH_CRED_ID = "jenkins-key"
+        EC2_IP = "13.201.47.71"
+        REMOTE_USER = "ubuntu"
+        APP_PATH = "/opt/ecom-app"
+        PROJECT_DIR = "JtProject"
+        SERVICE_NAME = "ecom.service"
+    }
+
+    stages {
+
+        stage('Checkout Code') {
+            steps {
+                git url: "${GITHUB_REPO_URL}", branch: "${GIT_BRANCH}"
+            }
+        }
+
+        stage('Build with Maven') {
+            steps {
+                dir("${PROJECT_DIR}") {
+                    sh "mvn -B clean package -DskipTests"
+                }
+            }
+
+            post {
+                success {
+                    archiveArtifacts artifacts: "${PROJECT_DIR}/target/*.jar", fingerprint: true
+                }
+            }
+        }
+
+        stage('Deploy to EC2') {
+            steps {
+                sshagent(credentials: [SSH_CRED_ID]) {
+                    script {
+
+                        def jarFile = sh(
+                            script: "ls ${PROJECT_DIR}/target/*.jar | head -n 1",
+                            returnStdout: true
+                        ).trim()
+
+                        if (!jarFile) {
+                            error "❌ No JAR file found."
+                        }
+
+                        sh "ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${EC2_IP} 'sudo mkdir -p ${APP_PATH}'"
+
+                        sh "scp -o StrictHostKeyChecking=no ${jarFile} ${REMOTE_USER}@${EC2_IP}:${APP_PATH}/app.jar"
+
+                        sh """
+                        ssh -o StrictHostKeyChecking=no ${REMOTE_USER}@${EC2_IP} '
+                            if [ ! -f /etc/systemd/system/${SERVICE_NAME} ]; then
+                                echo "[Unit]
+                                Description=Spring Boot E-Commerce Application
+                                After=network.target
+
+                                [Service]
+                                User=${REMOTE_USER}
+                                ExecStart=/usr/bin/java -jar ${APP_PATH}/app.jar
+                                Restart=always
+                                RestartSec=10
+
+                                [Install]
+                                WantedBy=multi-user.target" | sudo tee /etc/systemd/system/${SERVICE_NAME}
+                                sudo systemctl daemon-reload
+                                sudo systemctl enable ${SERVICE_NAME}
+                            fi
+
+                            sudo systemctl restart ${SERVICE_NAME}
+                        '
+                        """
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            deleteDir()
+        }
+    }
+}

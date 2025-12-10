@@ -45,10 +45,11 @@ The setup includes EC2, RDS, Security Groups, IAM roles, and automated applicati
 ├── pom.xml
 └── README.md
 
-# 1️⃣ Clone the Repository
+## 1️⃣ Clone the Repository
 
 git clone https://github.com/payal1184/Spring-Boot-E-Commerce-Deployment.git
 cd Spring-Boot-E-Commerce-Deployment
+
 
 ## 2️⃣ Build AWS Infrastructure (Terraform)
 AWS Provider

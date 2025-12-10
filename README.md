@@ -1,140 +1,126 @@
-# Spring Boot E-Commerce Cloud Deployment
+# 🛒 Spring Boot E-Commerce Application  
+### Deployment using Terraform, AWS EC2 & RDS
 
-## Introduction
-This project represents a fully automated deployment of a **Spring Boot–based E-Commerce backend** hosted on AWS.  
-The application runs on an **EC2 instance**, connects to a **MySQL database on RDS**, and the entire cloud setup is created using **Terraform**.  
-A **Jenkins pipeline** is integrated to build, test, and deploy the application automatically.
-
-The goal of this setup is to simulate a real-world cloud production environment for learning DevOps + Cloud deployment practices.
+This project demonstrates deploying a **Spring Boot E-Commerce Application** on AWS using **Terraform**.  
+The setup includes EC2, RDS, Security Groups, IAM roles, and automated application deployment.
 
 ---
 
-## Key Capabilities
-- Spring Boot REST API for e-commerce operations  
-- JWT-secured user authentication  
-- Product and order management modules  
-- MySQL database hosted on AWS RDS  
-- EC2-based backend deployment  
-- Automated provisioning using Terraform  
-- CI/CD pipeline implemented using Jenkins  
+## ⚙️ Features
+
+- Spring Boot backend application  
+- Terraform-based AWS infrastructure  
+- EC2 instance for hosting  
+- MySQL RDS database  
+- Secure IAM roles & security groups  
+- Automated JAR deployment using user_data  
+- Production-ready and scalable  
 
 ---
 
-## Repository Layout
+## 📦 Tech Stack
+
+- Spring Boot  
+- Terraform  
+- AWS EC2  
+- AWS RDS (MySQL)  
+- Amazon Linux 2  
+- Maven  
+- S3  
+
+---
+
+## 📁 Project Structure
+
+├── src/
+│ └── main/
+│ └── java/…
+│
 ├── terraform/
 │ ├── main.tf
 │ ├── variables.tf
 │ ├── outputs.tf
-│ ├── ec2.tf
-│ ├── rds.tf
-│ ├── security-groups.tf
-│ └── user-data.sh
+│ └── user_data.sh
 │
-├── jenkins/
-│ └── Jenkinsfile
-│
-├── src/
-│ └── main/
-│ └── resources/
-│ └── application.properties
-│
+├── pom.xml
 └── README.md
 
-yaml
-Copy code
-
----
-
 ## 1️⃣ Clone Project
-```bash
 git clone <your-repo-url>
 cd SpringBoot-Ecommerce-Cloud
-2️⃣ Build AWS Infrastructure (Terraform)
+
+## 2️⃣ Build AWS Infrastructure (Terraform)
 AWS Provider
-hcl
-Copy code
 provider "aws" {
   region = "ap-south-1"
 }
-Infrastructure Includes:
+
+Infrastructure Includes
+
 EC2 instance with Java runtime
 
-Security groups for EC2 & RDS
+Security Groups for EC2 & RDS
 
 MySQL RDS database
 
-Automated instance configuration via user_data.sh
+Automated EC2 configuration using user_data.sh
 
 Run Terraform
-bash
-Copy code
 terraform init
 terraform plan
 terraform apply
-3️⃣ Configure Application
-Edit the following file:
 
-css
-Copy code
+## 3️⃣ Configure Application
+
+Edit the file:
+
 src/main/resources/application.properties
-Set database connection:
 
-properties
-Copy code
+Set database connection
 spring.datasource.url=jdbc:mysql://<RDS-ENDPOINT>:3306/ecommerce
 spring.datasource.username=<USERNAME>
 spring.datasource.password=<PASSWORD>
+
 spring.jpa.hibernate.ddl-auto=update
-4️⃣ Package the Application
+
+## 4️⃣ Package the Application
+
 Run Maven:
 
-bash
-Copy code
 mvn clean package -DskipTests
-Output JAR will appear inside:
 
-Copy code
+
+Output JAR will appear in:
+
 target/
-5️⃣ CI/CD Using Jenkins Pipeline
-The pipeline performs:
+
+## 5️⃣ CI/CD Using Jenkins Pipeline
+
+The Jenkins pipeline performs:
 
 ✔ Git checkout
 ✔ Maven build
 ✔ Copies JAR to EC2
-✔ Runs app using systemd service
+✔ Starts the Spring Boot app using systemd
 
 Pipeline script located in:
 
-Copy code
 jenkins/Jenkinsfile
-6️⃣ Configure GitHub Webhook
-On GitHub:
 
-Settings → Webhooks → Add webhook
+## 6️⃣ Configure GitHub Webhook
 
-Use your Jenkins URL:
+Go to:
 
-perl
-Copy code
+GitHub → Repository → Settings → Webhooks → Add webhook
+
+Webhook URL
 http://<JENKINS-SERVER>/github-webhook/
-Trigger: On Push Events
 
-7️⃣ Access the Application
-Once the pipeline finishes, open:
 
-cpp
-Copy code
+Trigger: Push events
+
+## 7️⃣ Access the Application
+
+After successful deployment:
+
 http://<EC2-PUBLIC-IP>:8080
-Results & Learnings
-Hands-on experience with AWS compute & database services
-
-Automated cloud provisioning using Terraform
-
-CI/CD lifecycle with Jenkins
-
-Full deployment workflow for Spring Boot applications
-
-Strong understanding of security groups, networking and RDS connectivity
-
-
-
